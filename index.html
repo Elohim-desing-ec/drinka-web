@@ -44,6 +44,9 @@
     <symbol id="i-left" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m15 18-6-6 6-6"/></symbol>
     <symbol id="i-right" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></symbol>
     <symbol id="i-up" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-bike" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></g></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v8h14v-8M10 21v-5h4v5"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
     <symbol id="i-send" viewBox="0 0 24 24"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></symbol>
   </defs>
 </svg>
@@ -223,11 +226,11 @@
       </div>
       <ol class="steps">
         <li class="step reveal" style="--d:0;--c:#6F8A3A"><span class="step__n">1</span><div><h3>Elige tu bebida</h3><p>Explora el menú y toca <b>Agregar</b> en las que quieras.</p></div></li>
-        <li class="step reveal" style="--d:1;--c:#9E86D6"><span class="step__n">2</span><div><h3>Revisa tu pedido</h3><p>Abajo verás tu pedido con el total. Ajusta las cantidades.</p></div></li>
-        <li class="step reveal" style="--d:2;--c:#EE8A34"><span class="step__n">3</span><div><h3>Envíalo por WhatsApp</h3><p>Nos llega todo escrito. Solo confirma tu dirección y listo.</p></div></li>
+        <li class="step reveal" style="--d:1;--c:#9E86D6"><span class="step__n">2</span><div><h3>Retiro o delivery</h3><p>Abre tu pedido, elige cómo lo quieres y, si es delivery, escribe tu dirección exacta.</p></div></li>
+        <li class="step reveal" style="--d:2;--c:#EE8A34"><span class="step__n">3</span><div><h3>Revisa y envía</h3><p>Antes de enviar ves el mensaje tal como nos llegará por WhatsApp.</p></div></li>
       </ol>
       <div class="delivery__cta reveal">
-        <a class="btn btn--wa" data-link="delivery" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>Pedir a domicilio</a>
+        <a class="btn btn--wa" id="delivery-cta" href="#menu"><svg><use href="#i-bike"/></svg>Pedir a domicilio</a>
         <a class="btn btn--ghost" href="#menu">Ver el menú</a>
       </div>
     </div>
@@ -347,7 +350,7 @@
 <aside class="drawer" id="drawer" aria-label="Tu pedido" aria-hidden="true">
   <span class="drawer__handle" aria-hidden="true"></span>
   <div class="drawer__head">
-    <h2>Tu pedido</h2>
+    <div><p class="step-label">Paso 1 de 2</p><h2>Tu pedido</h2></div>
     <button class="drawer__close" id="close-cart" type="button" aria-label="Cerrar">×</button>
   </div>
   <ul class="drawer__list" id="cart-list"></ul>
@@ -358,10 +361,88 @@
   </div>
   <div class="drawer__foot">
     <div class="drawer__total"><span>Total</span><b id="cart-total">$0.00</b></div>
-    <a class="btn btn--wa btn--block" id="cart-send" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>Enviar pedido por WhatsApp</a>
+    <button class="btn btn--navy btn--block" id="cart-next" type="button">Continuar con el pedido <svg><use href="#i-arrow"/></svg></button>
     <button class="drawer__clear" id="cart-clear" type="button">Vaciar pedido</button>
   </div>
 </aside>
+
+<!-- ============ FINALIZAR PEDIDO ============ -->
+<div class="checkout" id="checkout" role="dialog" aria-modal="true" aria-labelledby="co-title" aria-hidden="true">
+  <div class="checkout__panel">
+    <header class="checkout__head">
+      <button class="checkout__back" id="co-back" type="button" aria-label="Volver a tu pedido"><svg><use href="#i-left"/></svg></button>
+      <div><p class="step-label">Paso 2 de 2</p><h2 id="co-title" tabindex="-1">Finaliza tu pedido</h2></div>
+      <button class="drawer__close" id="co-close" type="button" aria-label="Cerrar">×</button>
+    </header>
+
+    <div class="checkout__body">
+      <form class="checkout__form" id="co-form" novalidate>
+        <fieldset class="field">
+          <legend>¿Cómo quieres tu pedido?</legend>
+          <div class="mode">
+            <label class="mode__opt"><input type="radio" name="modo" value="retiro" checked><span><svg><use href="#i-store"/></svg><b>Retiro en el local</b><small>Pasas a recogerlo</small></span></label>
+            <label class="mode__opt"><input type="radio" name="modo" value="delivery"><span><svg><use href="#i-bike"/></svg><b>Delivery</b><small>Te lo llevamos</small></span></label>
+          </div>
+        </fieldset>
+
+        <label class="field">
+          <span>Tu nombre <i>(opcional)</i></span>
+          <input id="co-nombre" autocomplete="name" placeholder="¿A nombre de quién?" maxlength="60">
+        </label>
+
+        <div class="delivery-fields" id="co-delivery" hidden>
+          <label class="field" id="co-dir-field">
+            <span>Dirección exacta <b class="req">*</b></span>
+            <textarea id="co-direccion" rows="2" autocomplete="street-address" maxlength="200" placeholder="Ciudadela o barrio, calle principal, número de casa…"></textarea>
+            <em class="field__error">Escribe tu dirección exacta para enviarte el pedido.</em>
+          </label>
+          <label class="field">
+            <span>Referencia <i>(opcional)</i></span>
+            <input id="co-referencia" maxlength="120" placeholder="Ej.: casa blanca de dos pisos, junto a la farmacia">
+          </label>
+          <button class="geo" id="co-geo" type="button"><svg><use href="#i-pin"/></svg><span>Agregar mi ubicación actual</span></button>
+          <p class="field__hint">El valor del delivery te lo confirmamos por WhatsApp.</p>
+        </div>
+
+        <label class="field">
+          <span>Nota para tu pedido <i>(opcional)</i></span>
+          <input id="co-nota" maxlength="140" placeholder="Ej.: poco hielo, menos dulce">
+        </label>
+      </form>
+
+      <div class="preview">
+        <p class="preview__label"><svg><use href="#i-wa"/></svg>Así llegará tu mensaje a WhatsApp</p>
+        <div class="wa">
+          <div class="wa__bar">
+            <img src="assets/apple-touch-icon.png" alt="" width="180" height="180">
+            <div><b>DRINKA by Kai Bobba</b><small>en línea</small></div>
+          </div>
+          <div class="wa__chat"><div class="bubble bubble--out" id="co-preview"></div></div>
+        </div>
+        <p class="preview__note">Al tocar <b>Enviar</b> se abre WhatsApp con este mensaje listo. Solo presionas enviar.</p>
+      </div>
+    </div>
+
+    <footer class="checkout__foot">
+      <div class="checkout__total"><span>Total</span><b id="co-total">$0.00</b></div>
+      <a class="btn btn--wa" id="co-send" href="#" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>Enviar por WhatsApp</a>
+    </footer>
+
+    <div class="checkout__done" aria-live="polite">
+      <div>
+        <span class="done__icon"><svg><use href="#i-check"/></svg></span>
+        <h3>¡Listo! Te abrimos WhatsApp</h3>
+        <p>Solo presiona <b>enviar</b> en WhatsApp y te confirmamos tu pedido por ahí.</p>
+        <div class="done__btns">
+          <button class="btn btn--navy" id="co-finish" type="button">Vaciar pedido y volver</button>
+          <button class="btn btn--ghost" id="co-again" type="button">Volver a revisar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="script.js"></script>
 </body>

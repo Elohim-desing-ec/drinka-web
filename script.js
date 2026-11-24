@@ -114,7 +114,6 @@ const LINKS = {
   instagram: DRINKA.instagram,
   tiktok: DRINKA.tiktok,
   mapa: DRINKA.mapa,
-  delivery: waLink("¡Hola Drinka! Quiero pedir a domicilio."),
 };
 $$("[data-link]").forEach(a => { if (LINKS[a.dataset.link]) a.href = LINKS[a.dataset.link]; });
 $$("[data-text]").forEach(el => { if (DRINKA[el.dataset.text]) el.textContent = DRINKA[el.dataset.text]; });
@@ -476,7 +475,11 @@ $("#cartbar-open").addEventListener("click", openCart);
 $("#close-cart").addEventListener("click", closeCart);
 $("#empty-go").addEventListener("click", closeCart);
 scrim.addEventListener("click", closeCart);
-addEventListener("keydown", e => { if (e.key === "Escape" && drawer.classList.contains("is-on")) closeCart(); });
+addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (checkout.classList.contains("is-on")) closeCheckout();
+  else if (drawer.classList.contains("is-on")) closeCart();
+});
 $("#cart-clear").addEventListener("click", () => { cart = {}; updateCart(); });
 
 // En el celular el pedido se cierra deslizándolo hacia abajo
@@ -560,9 +563,9 @@ function updateCart() {
       ${qtyHTML(b)}
     </li>`).join("");
   $("#cart-total").textContent = money(total);
-  $("#cart-send").href = waLink(`¡Hola Drinka! Quiero pedir:\n${lines.map(l => l.text).join("\n")}\nTotal: ${money(total)}\n¿Me confirman? ¡Gracias!`);
 
   renderChat();
+  renderCheckout();
 }
 
 // El vasito vuela hasta el pedido
@@ -601,15 +604,156 @@ document.addEventListener("click", e => {
 });
 
 /* =========================================================
+   FINALIZAR PEDIDO: retiro o delivery + vista previa del WhatsApp
+   ========================================================= */
+const checkout = $("#checkout");
+const datos = { modo: "retiro", nombre: "", direccion: "", referencia: "", ubicacion: "", nota: "" };
+try { Object.assign(datos, JSON.parse(localStorage.getItem("drinka-datos")) || {}); } catch {}
+datos.ubicacion = ""; datos.nota = "";
+const saveDatos = () => {
+  const { modo, nombre, direccion, referencia } = datos;
+  localStorage.setItem("drinka-datos", JSON.stringify({ modo, nombre, direccion, referencia }));
+};
+
+// Arma el texto exacto que se envía (los *asteriscos* salen en negrita en WhatsApp)
+function buildMessage(entries, d, ejemplo = false) {
+  const { lines, total } = orderLines(entries);
+  const out = ["¡Hola Drinka! Quiero hacer un pedido:", "", ...lines.map(l => l.text), "", `*Total: ${money(total)}*`, ""];
+  if (d.nombre.trim()) out.push(`*Nombre:* ${d.nombre.trim()}`);
+  if (d.modo === "delivery") {
+    out.push("*Entrega:* Delivery a domicilio");
+    out.push(`*Dirección:* ${d.direccion.trim() || (ejemplo ? "{{Tu dirección exacta}}" : "{{Escribe tu dirección}}")}`);
+    if (d.referencia.trim()) out.push(`*Referencia:* ${d.referencia.trim()}`);
+    if (d.ubicacion) out.push(`*Ubicación:* ${d.ubicacion}`);
+  } else {
+    out.push("*Entrega:* Retiro en el local");
+  }
+  if (d.nota.trim()) out.push(`*Nota:* ${d.nota.trim()}`);
+  out.push("", "¿Me confirman? ¡Gracias!");
+  return out.join("\n");
+}
+// Lo muestra como en WhatsApp: negritas, enlaces y espacios por llenar
+const waHTML = text => esc(text)
+  .replace(/\*([^*\n]+)\*/g, "<b>$1</b>")
+  .replace(/\{\{([^}]+)\}\}/g, '<span class="ph">$1</span>')
+  .replace(/(https:\/\/maps\.google\.com\/\?q=[\d.,-]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
+  .replace(/\n/g, "<br>");
+
+const coSend = $("#co-send");
+const dirField = $("#co-dir-field");
+const necesitaDireccion = () => datos.modo === "delivery" && datos.direccion.trim().length < 6;
+
+function renderCheckout() {
+  const entries = Object.entries(cart);
+  const text = buildMessage(entries, datos);
+  $("#co-preview").innerHTML = `${waHTML(text)}<time>${hora()}</time>`;
+  $("#co-total").textContent = money(orderLines(entries).total);
+  $("#co-delivery").hidden = datos.modo !== "delivery";
+  coSend.href = waLink(text);
+  coSend.classList.toggle("is-off", necesitaDireccion());
+  if (!necesitaDireccion()) dirField.classList.remove("is-error");
+}
+
+// Rellena el formulario con lo guardado
+$$('input[name="modo"]').forEach(r => { r.checked = r.value === datos.modo; });
+[["#co-nombre", "nombre"], ["#co-direccion", "direccion"], ["#co-referencia", "referencia"], ["#co-nota", "nota"]].forEach(([sel, key]) => {
+  const el = $(sel);
+  el.value = datos[key];
+  el.addEventListener("input", () => { datos[key] = el.value; saveDatos(); renderCheckout(); renderChat(); });
+});
+$("#co-form").addEventListener("change", e => {
+  if (e.target.name !== "modo") return;
+  datos.modo = e.target.value;
+  saveDatos(); renderCheckout(); renderChat();
+  if (datos.modo === "delivery" && !datos.direccion && finePointer) $("#co-direccion").focus();
+});
+$("#co-form").addEventListener("submit", e => e.preventDefault());
+
+// Ubicación actual como enlace de Google Maps
+const geo = $("#co-geo");
+const geoText = t => { $("span", geo).textContent = t; };
+geo.addEventListener("click", () => {
+  if (datos.ubicacion) {
+    datos.ubicacion = ""; geo.className = "geo"; geoText("Agregar mi ubicación actual"); renderCheckout(); return;
+  }
+  if (!navigator.geolocation) { geo.className = "geo is-error"; geoText("Tu navegador no permite compartir ubicación"); return; }
+  geo.className = "geo is-busy"; geoText("Buscando tu ubicación…");
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude: la, longitude: lo } = pos.coords;
+    datos.ubicacion = `https://maps.google.com/?q=${la.toFixed(6)},${lo.toFixed(6)}`;
+    geo.className = "geo is-done"; geoText("Ubicación agregada · toca para quitarla");
+    renderCheckout();
+  }, () => {
+    geo.className = "geo is-error"; geoText("No pudimos obtener tu ubicación. Escribe la dirección.");
+  }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+});
+
+function openCheckout() {
+  if (!countAll()) return;
+  drawer.classList.remove("is-on");
+  drawer.setAttribute("aria-hidden", "true");
+  scrim.classList.remove("is-on");
+  setTimeout(() => { scrim.hidden = true; }, 400);
+  checkout.classList.remove("is-sent");
+  renderCheckout();
+  checkout.classList.add("is-on");
+  checkout.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  cartbar.classList.remove("is-on");
+  $(".checkout__body").scrollTop = 0;
+  setTimeout(() => $("#co-title").focus({ preventScroll: true }), 50);
+}
+function closeCheckout() {
+  checkout.classList.remove("is-on", "is-sent");
+  checkout.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  syncCartbar();
+}
+$("#cart-next").addEventListener("click", openCheckout);
+$("#co-close").addEventListener("click", closeCheckout);
+$("#co-back").addEventListener("click", () => { closeCheckout(); openCart(); });
+checkout.addEventListener("click", e => { if (e.target === checkout) closeCheckout(); });
+
+coSend.addEventListener("click", e => {
+  if (necesitaDireccion()) {
+    e.preventDefault();
+    dirField.classList.remove("is-error"); void dirField.offsetWidth; dirField.classList.add("is-error");
+    $("#co-direccion").focus();
+    dirField.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  setTimeout(() => checkout.classList.add("is-sent"), 400);
+});
+$("#co-finish").addEventListener("click", () => { cart = {}; updateCart(); closeCheckout(); });
+$("#co-again").addEventListener("click", () => checkout.classList.remove("is-sent"));
+
+// "Pedir a domicilio": deja marcado delivery y lleva al pedido (o al menú si está vacío)
+let toastT;
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("is-on");
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove("is-on"), 2600);
+}
+$("#delivery-cta").addEventListener("click", e => {
+  datos.modo = "delivery";
+  $$('input[name="modo"]').forEach(r => { r.checked = r.value === "delivery"; });
+  saveDatos(); renderCheckout(); renderChat();
+  if (countAll()) { e.preventDefault(); openCheckout(); }
+  else toast("Primero elige tus bebidas y luego escribes tu dirección 🧋");
+});
+
+/* =========================================================
    DELIVERY: el chat del teléfono muestra tu pedido
    ========================================================= */
 const SAMPLE = [[FAVS[0].id, 1], [FAVS[1].id, 1]];
 const hora = () => new Date().toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit" });
 function renderChat() {
   const entries = Object.keys(cart).length ? Object.entries(cart) : SAMPLE;
-  const { lines, total } = orderLines(entries);
+  const data = datos.modo === "delivery" && datos.direccion.trim() ? datos : { ...datos, modo: "delivery", direccion: "" };
   const msg = $("#chat-msg");
-  msg.innerHTML = `¡Hola Drinka! Quiero pedir:<br>${lines.map(l => esc(l.text)).join("<br>")}<br><b>Total: ${money(total)}</b><br>¿Me confirman? ¡Gracias!<time>${hora()} ✓✓</time>`;
+  msg.innerHTML = `${waHTML(buildMessage(entries, data, true))}<time>${hora()} ✓✓</time>`;
   restart(msg, "is-flash");
 }
 const phoneIO = new IntersectionObserver(([en]) => {
@@ -617,7 +761,7 @@ const phoneIO = new IntersectionObserver(([en]) => {
   phoneIO.disconnect();
   const reply = $("#chat-reply");
   setTimeout(() => { reply.hidden = false; reply.innerHTML = `<span class="typing"><i></i><i></i><i></i></span>`; }, 900);
-  setTimeout(() => { reply.innerHTML = `¡Recibido! 🧋 Ya lo estamos preparando. ¿A qué dirección te lo enviamos?<time>${hora()}</time>`; }, 2600);
+  setTimeout(() => { reply.innerHTML = `¡Recibido! 🧋 Ya lo estamos preparando y te avisamos cuando salga.<time>${hora()}</time>`; }, 2600);
 }, { threshold: .5 });
 phoneIO.observe($("#phone"));
 
