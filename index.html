@@ -25,6 +25,11 @@
 <script>
   document.documentElement.classList.add("js");
   try { if (sessionStorage.getItem("drinka-intro")) document.documentElement.classList.add("no-intro"); } catch (e) {}
+  // Red de seguridad: pase lo que pase, a los 4 s la página se muestra
+  setTimeout(function () {
+    document.documentElement.classList.add("no-intro");
+    if (document.body) { document.body.classList.add("is-ready"); document.body.classList.remove("is-loading"); }
+  }, 4000);
 </script>
 </head>
 <body>

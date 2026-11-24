@@ -26,9 +26,9 @@
   --wrap: 1240px;
 
   /* papel arrugado */
-  --crumple: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='1000'%3E%3Cfilter id='p' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0045 .006' numOctaves='5' seed='11'/%3E%3CfeDiffuseLighting lighting-color='%23fff' surfaceScale='5'%3E%3CfeDistantLight azimuth='225' elevation='48'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  --crumple: url("assets/texturas/papel.jpg");
   /* grano fino */
-  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --noise: url("assets/texturas/grano.jpg");
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -43,7 +43,7 @@ body {
 }
 body::after {
   content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none;
-  background: var(--noise); opacity: .05;
+  background: var(--noise); opacity: .06; mix-blend-mode: overlay;
 }
 ::selection { background: #A88FE0; color: #fff; }
 img { display: block; max-width: 100%; }
@@ -1282,3 +1282,6 @@ html { -webkit-tap-highlight-color: transparent; }
   .checkout__total b { font-size: 28px; }
   .wa__chat { min-height: 0; }
 }
+
+/* Celular: sin capa de grano fija (ahorra trabajo al navegador) */
+@media (max-width: 820px) { body::after { display: none; } }
