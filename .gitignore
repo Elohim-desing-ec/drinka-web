@@ -1,3 +1,11 @@
 .DS_Store
 # Menús de diseño (no los usa la web)
 Imagenes/
+
+# Vista previa de la tarjeta (no publicar)
+tarjeta-demo.html
+
+# Claves privadas (nunca subir)
+supabase/CLAVE-BASE-DE-DATOS.txt
+supabase/ACCESO-PANEL.txt
+supabase/.temp/

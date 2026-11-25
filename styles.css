@@ -1285,3 +1285,9 @@ html { -webkit-tap-highlight-color: transparent; }
 
 /* Celular: sin capa de grano fija (ahorra trabajo al navegador) */
 @media (max-width: 820px) { body::after { display: none; } }
+
+/* Botón "Mi tarjeta" (vista previa del Club DRINKA) */
+.nav__links a.nav__club { display: inline-flex; align-items: center; gap: 6px; background: var(--gold); color: var(--navy); font-weight: 700; }
+.nav__links a.nav__club svg { width: 16px; height: 16px; }
+.nav__links a.nav__club:hover { background: #F7CF6E; }
+@media (max-width: 820px) { .nav__links a.nav__club { justify-content: center; } }

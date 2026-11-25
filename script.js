@@ -615,11 +615,19 @@ const saveDatos = () => {
   localStorage.setItem("drinka-datos", JSON.stringify({ modo, nombre, direccion, referencia }));
 };
 
+// Si el cliente entró a su tarjeta Club DRINKA, su código viaja en el pedido
+function socioClub() {
+  try { const c = JSON.parse(localStorage.getItem("drinka-club")); return c && /^DRK-\d{4}$/.test(c.codigo) ? c : null; } catch { return null; }
+}
+if (!datos.nombre && socioClub()) datos.nombre = socioClub().nombre;
+
 // Arma el texto exacto que se envía (los *asteriscos* salen en negrita en WhatsApp)
 function buildMessage(entries, d, ejemplo = false) {
   const { lines, total } = orderLines(entries);
   const out = ["¡Hola Drinka! Quiero hacer un pedido:", "", ...lines.map(l => l.text), "", `*Total: ${money(total)}*`, ""];
   if (d.nombre.trim()) out.push(`*Nombre:* ${d.nombre.trim()}`);
+  const club = socioClub();
+  if (club) out.push(`*Club DRINKA:* ${club.codigo}`);
   if (d.modo === "delivery") {
     out.push("*Entrega:* Delivery a domicilio");
     out.push(`*Dirección:* ${d.direccion.trim() || (ejemplo ? "{{Tu dirección exacta}}" : "{{Escribe tu dirección}}")}`);

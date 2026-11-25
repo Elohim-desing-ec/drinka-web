@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi tarjeta · Club DRINKA</title>
+<meta name="description" content="Tu tarjeta de cliente frecuente de DRINKA by Kai Bobba.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#161E38">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Club DRINKA">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="club.css">
+<style>
+main { width: min(1100px, 100% - 32px); margin: 0 auto 60px; }
+.hello { text-align: center; margin: 6px 0 26px; }
+.hello h1 { margin: 0; font-weight: 900; font-size: clamp(38px, 7vw, 64px); line-height: .95; letter-spacing: -.055em; text-transform: lowercase; }
+.hello h1 em { font-style: normal; background: var(--perla); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hello p { margin: 10px auto 0; max-width: 460px; color: rgba(251,235,221,.7); line-height: 1.5; }
+
+/* Ingreso */
+.auth { width: min(430px, 100%); margin: 0 auto; padding: 22px; border-radius: 28px; background: var(--paper); color: var(--navy); box-shadow: 0 50px 90px -40px rgba(0,0,0,.8); }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 20px; border-radius: 999px; background: var(--cream); }
+.tabs button { height: 44px; border-radius: 999px; font-weight: 700; color: var(--navy-3); transition: background .3s, color .3s; }
+.tabs button[aria-selected="true"] { background: var(--navy); color: #fff; }
+.auth form { animation: in .4s var(--ease); }
+@keyframes in { from { opacity: 0; transform: translateY(8px); } }
+.pins { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.auth small { display: block; margin-top: 12px; font-size: 13px; line-height: 1.45; color: var(--navy-3); text-align: center; }
+.linkbtn { display: block; margin: 14px auto 0; color: var(--navy-3); font-weight: 700; font-size: 14px; text-decoration: underline; }
+
+/* Tarjeta */
+.mine { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 48px); align-items: start; }
+.mine__card { display: grid; justify-items: center; gap: 14px; }
+.hint { margin: 0; font-size: 14px; color: rgba(251,235,221,.6); }
+.done { width: min(460px, 100%); padding: 14px 18px; border-radius: 18px; background: var(--gold); color: var(--navy); font-weight: 800; text-align: center; }
+.mine__info { display: grid; gap: 14px; }
+.box { padding: 20px; border-radius: 24px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); }
+.box h2 { margin: 0 0 12px; font-weight: 800; font-size: 22px; letter-spacing: -.03em; text-transform: lowercase; }
+.progress__txt { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; font-weight: 700; }
+.progress__txt span:last-child { color: #B2DAED; font-weight: 600; text-align: right; }
+.bar { height: 10px; border-radius: 10px; background: rgba(255,255,255,.1); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; border-radius: 10px; background: var(--perla); transition: width .9s var(--spring); }
+.rewards { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.reward { display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 12px; }
+.reward__icon { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--gold); color: var(--gold); font-family: var(--block); font-size: 15px; }
+.reward__icon svg { width: 20px; height: 20px; }
+.reward b { display: block; font-size: 15px; }
+.reward small { color: rgba(251,235,221,.6); font-size: 13px; }
+.reward__state { font-size: 12px; font-weight: 800; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.08); white-space: nowrap; }
+.reward.is-on .reward__icon { background: var(--gold); color: var(--navy); }
+.reward.is-on .reward__state { background: var(--gold); color: var(--navy); }
+.how { margin: 0; padding-left: 20px; color: rgba(251,235,221,.78); line-height: 1.6; font-size: 15px; }
+.how b { color: var(--cream); }
+.mine__btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.mine__btns .btn { flex: 1 1 180px; }
+.setup { width: min(520px, 100%); margin: 30px auto; padding: 26px; border-radius: 26px; background: var(--paper); color: var(--navy); text-align: center; line-height: 1.55; }
+.setup h2 { margin: 0 0 8px; font-weight: 900; font-size: 28px; letter-spacing: -.04em; }
+@media (max-width: 880px) { .mine { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html" aria-label="Ir a la web de DRINKA"><img src="assets/logo-blanco.png" alt="DRINKA by Kai Bobba"></a>
+  <div class="top__right">
+    <a class="pillbtn pillbtn--light" href="index.html"><svg><use href="#i-left"/></svg>Volver a la web</a>
+  </div>
+</header>
+
+<main>
+  <div class="spinner" id="v-loading"></div>
+
+  <!-- Falta conectar la base de datos -->
+  <section class="setup" id="v-setup" hidden>
+    <h2>Muy pronto 💳</h2>
+    <p>La tarjeta Club DRINKA todavía se está preparando. Vuelve pronto.</p>
+  </section>
+
+  <!-- Entrar / Crear -->
+  <section id="v-auth" hidden>
+    <div class="hello">
+      <h1>club <em>drinka</em></h1>
+      <p>Tu tarjeta de cliente frecuente. Cada compra suma un sello y los sellos se convierten en premios.</p>
+    </div>
+    <div class="auth">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="true" data-tab="entrar">Entrar</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="crear">Crear mi tarjeta</button>
+      </div>
+      <p class="msg msg--error" id="a-error" hidden></p>
+
+      <form id="f-entrar" novalidate>
+        <label class="field"><span>Tu WhatsApp</span><span class="tel"><b>+593</b><input id="e-tel" inputmode="tel" autocomplete="tel" placeholder="99 123 4567" maxlength="14"></span></label>
+        <label class="field"><span>Tu PIN de 4 números</span><input class="input pin" id="e-pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="4" placeholder="••••"></label>
+        <button class="btn btn--navy btn--block" type="submit">Ver mi tarjeta</button>
+        <button class="linkbtn" id="olvide" type="button">Olvidé mi PIN</button>
+      </form>
+
+      <form id="f-crear" novalidate hidden>
+        <label class="field"><span>Tu nombre</span><input class="input" id="c-nombre" autocomplete="name" maxlength="40" placeholder="Nombre y apellido"></label>
+        <label class="field"><span>Tu WhatsApp</span><span class="tel"><b>+593</b><input id="c-tel" inputmode="tel" autocomplete="tel" placeholder="99 123 4567" maxlength="14"></span></label>
+        <div class="pins">
+          <label class="field"><span>Crea un PIN</span><input class="input pin" id="c-pin" type="password" inputmode="numeric" autocomplete="new-password" maxlength="4" placeholder="••••"></label>
+          <label class="field"><span>Repítelo</span><input class="input pin" id="c-pin2" type="password" inputmode="numeric" autocomplete="new-password" maxlength="4" placeholder="••••"></label>
+        </div>
+        <button class="btn btn--gold btn--block" type="submit">Crear mi tarjeta</button>
+        <small>Tu PIN es secreto: con tu número y tu PIN solo tú puedes ver tu tarjeta.</small>
+      </form>
+    </div>
+  </section>
+
+  <!-- Mi tarjeta -->
+  <section id="v-card" hidden>
+    <div class="hello">
+      <h1>hola, <em id="m-hola">amigo</em></h1>
+      <p>Esta es tu tarjeta Club DRINKA. Tócala para ver tus sellos.</p>
+    </div>
+    <div class="mine">
+      <div class="mine__card">
+        <div class="card-wrap">
+          <div class="card" id="card" role="button" tabindex="0" aria-label="Tu tarjeta. Toca para girarla.">
+            <div class="face front">
+              <span class="front__orb"></span>
+              <div class="front__cups" aria-hidden="true">
+                <img src="PNG/taro-latte.png" alt=""><img src="PNG/matcha-latte.png" alt=""><img src="PNG/ice-latte.png" alt="">
+              </div>
+              <img class="front__logo" src="assets/logo-blanco.png" alt="DRINKA">
+              <div class="front__title"><b>Club <span>Drinka</span></b><small>Tarjeta de cliente frecuente</small></div>
+              <div class="front__foot">
+                <div class="front__name"><span id="f-name"></span><span class="front__since" id="f-since"></span></div>
+                <span class="chip" id="f-code"></span>
+              </div>
+            </div>
+            <div class="face back">
+              <div class="back__head"><b>Tus sellos</b><span class="back__count"><span id="b-count">0</span><small id="b-total">/10</small></span></div>
+              <div class="back__qr">
+                <div class="qr" id="qr"></div>
+                <span class="back__code" id="b-code"></span>
+                <small>🔒 Privada · muéstrala al pagar</small>
+              </div>
+              <div class="stamps" id="stamps"></div>
+            </div>
+          </div>
+        </div>
+        <p class="hint">Toca la tarjeta para girarla</p>
+        <div class="done" id="m-done" hidden>🎉 ¡Completaste tu tarjeta! Pide tu premio en tu próxima compra.</div>
+      </div>
+
+      <div class="mine__info">
+        <div class="box">
+          <div class="progress__txt"><span id="p-left"></span><span id="p-next"></span></div>
+          <div class="bar"><i id="p-bar"></i></div>
+        </div>
+        <div class="box">
+          <h2>tus premios</h2>
+          <ul class="rewards" id="rewards"></ul>
+        </div>
+        <div class="box">
+          <h2>cómo sumar sellos</h2>
+          <ol class="how">
+            <li>Pide desde la web: <b>tu código va solo</b> en el mensaje de WhatsApp.</li>
+            <li>En el local, <b>muestra tu tarjeta</b> o di tu código al pagar.</li>
+            <li>DRINKA te suma el sello al entregarte tu bebida.</li>
+          </ol>
+        </div>
+        <div class="mine__btns">
+          <a class="btn btn--gold" href="index.html#menu">Hacer un pedido</a>
+          <button class="btn btn--ghost" id="salir" type="button"><svg><use href="#i-out"/></svg>Salir</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="club-config.js"></script>
+<script src="club-ui.js"></script>
+<script>
+const C = window.CLUB, U = window.CLUBUI;
+const $ = s => document.querySelector(s);
+const KEY_TOKEN = "drinka-club-token", KEY_INFO = "drinka-club", KEY_VISTO = "drinka-club-visto";
+const views = ["#v-loading", "#v-setup", "#v-auth", "#v-card"].map(s => $(s));
+const show = sel => views.forEach(v => { v.hidden = v !== $(sel); });
+const card = $("#card");
+let tarjeta = null;
+
+const ERR = {
+  datos: "El número o el PIN no son correctos.",
+  telefono: "Revisa tu número de WhatsApp. Ejemplo: 099 123 4567.",
+  pin: "El PIN debe tener exactamente 4 números.",
+  nombre: "Escribe tu nombre.",
+  ya_existe: "Ese número ya tiene una tarjeta. Entra con tu PIN.",
+  sesion: "Tu sesión terminó. Vuelve a entrar.",
+  red: "No pudimos conectarnos. Revisa tu internet e inténtalo otra vez.",
+  config: "La tarjeta aún no está disponible.",
+};
+function error(code, extra) {
+  const el = $("#a-error");
+  el.textContent = code === "bloqueado" ? `Demasiados intentos. Espera ${extra} minutos e inténtalo otra vez.` : (ERR[code] || ERR.red);
+  el.hidden = false;
+}
+const limpiarError = () => { $("#a-error").hidden = true; };
+
+/* ---------- Pestañas ---------- */
+function tab(nombre) {
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === nombre));
+  $("#f-entrar").hidden = nombre !== "entrar";
+  $("#f-crear").hidden = nombre !== "crear";
+  limpiarError();
+}
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => tab(b.dataset.tab)));
+document.querySelectorAll(".pin").forEach(i => i.addEventListener("input", () => { i.value = i.value.replace(/\D/g, "").slice(0, 4); }));
+
+function guardarSesion(r) {
+  localStorage.setItem(KEY_TOKEN, r.token);
+  localStorage.setItem(KEY_INFO, JSON.stringify({ codigo: r.tarjeta.codigo, nombre: r.tarjeta.nombre }));
+  localStorage.setItem(KEY_VISTO, r.tarjeta.sellos);
+}
+
+async function enviar(form, fn, args, boton) {
+  limpiarError();
+  boton.disabled = true;
+  const r = await U.rpc(fn, args);
+  boton.disabled = false;
+  if (r.error) { error(r.error, r.minutos); return; }
+  guardarSesion(r);
+  mostrarTarjeta(r.tarjeta, true);
+}
+
+$("#f-entrar").addEventListener("submit", e => {
+  e.preventDefault();
+  const pin = $("#e-pin").value;
+  if (!/^\d{4}$/.test(pin)) { error("pin"); return; }
+  enviar(e.target, "club_entrar", { p_telefono: $("#e-tel").value, p_pin: pin }, e.submitter || $("#f-entrar .btn"));
+});
+$("#f-crear").addEventListener("submit", e => {
+  e.preventDefault();
+  const nombre = $("#c-nombre").value.trim(), pin = $("#c-pin").value;
+  if (nombre.length < 2) { error("nombre"); return; }
+  if (!/^\d{4}$/.test(pin)) { error("pin"); return; }
+  if (pin !== $("#c-pin2").value) { $("#a-error").textContent = "Los dos PIN no coinciden."; $("#a-error").hidden = false; return; }
+  enviar(e.target, "club_registrar", { p_nombre: nombre, p_telefono: $("#c-tel").value, p_pin: pin }, e.submitter || $("#f-crear .btn"));
+});
+$("#olvide").addEventListener("click", () => {
+  const tel = $("#e-tel").value.trim();
+  const txt = `¡Hola Drinka! Olvidé el PIN de mi tarjeta Club DRINKA.${tel ? ` Mi número es ${tel}.` : ""}`;
+  open(`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(txt)}`, "_blank", "noopener");
+});
+
+/* ---------- Tarjeta ---------- */
+function mostrarTarjeta(t, recien = false) {
+  const antes = +(localStorage.getItem(KEY_VISTO) ?? t.sellos);
+  tarjeta = t;
+  show("#v-card");
+  $("#m-hola").textContent = t.nombre.split(" ")[0].toLowerCase();
+  $("#f-name").textContent = t.nombre;
+  $("#f-since").textContent = `Socio desde ${U.fecha(t.creado)}`;
+  $("#f-code").textContent = t.codigo;
+  $("#b-code").textContent = t.codigo;
+  $("#b-count").textContent = t.sellos;
+  $("#b-total").textContent = `/${C.total}`;
+  const nuevo = t.sellos > antes ? t.sellos : 0;
+  $("#stamps").innerHTML = U.stampsHTML(t.sellos, nuevo);
+  $("#m-done").hidden = t.sellos < C.total;
+
+  const sig = U.siguiente(t.sellos);
+  $("#p-left").textContent = `${t.sellos} de ${C.total} sellos`;
+  $("#p-next").textContent = sig ? `Te ${sig.falta === 1 ? "falta 1 sello" : `faltan ${sig.falta} sellos`} para: ${sig.premio.texto}` : "¡Tarjeta completa!";
+  requestAnimationFrame(() => { $("#p-bar").style.width = `${(t.sellos / C.total) * 100}%`; });
+  $("#rewards").innerHTML = Object.entries(C.premios).map(([n, p]) => {
+    const on = t.sellos >= +n;
+    return `<li class="reward${on ? " is-on" : ""}"><span class="reward__icon">${p.icono ? U.icon(p.icono) : U.esc(p.corto)}</span>
+      <div><b>${U.esc(p.texto)}</b><small>Al completar ${n} sellos</small></div>
+      <span class="reward__state">${on ? "¡Desbloqueado!" : `Faltan ${n - t.sellos}`}</span></li>`;
+  }).join("");
+
+  if (window.qrcode) {
+    const q = qrcode(0, "M"); q.addData(`DRINKA-CLUB:${t.codigo}`); q.make();
+    $("#qr").innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }).replace(/fill="black"/g, 'fill="#1F2A4D"');
+  }
+
+  if (recien) { card.classList.remove("is-new"); void card.offsetWidth; card.classList.add("is-new"); }
+  if (nuevo) {
+    card.classList.add("is-flipped");
+    const p = C.premios[t.sellos];
+    setTimeout(() => {
+      if (p) { U.confetti(card); U.toast(`¡Ganaste: ${p.texto}! 🎉`, 4500); }
+      else U.toast(`¡Sumaste un sello! Llevas ${t.sellos} de ${C.total}`);
+    }, 700);
+  }
+  localStorage.setItem(KEY_VISTO, t.sellos);
+}
+
+card.addEventListener("click", () => card.classList.toggle("is-flipped"));
+card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); card.classList.toggle("is-flipped"); } });
+if (!U.reduce && matchMedia("(pointer: fine)").matches) {
+  card.addEventListener("pointermove", e => {
+    const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    card.classList.add("is-tilting");
+    card.style.setProperty("--ry", `${(x - .5) * 18}deg`); card.style.setProperty("--rx", `${(.5 - y) * 14}deg`);
+    card.style.setProperty("--mx", `${x * 100}%`); card.style.setProperty("--my", `${y * 100}%`);
+  });
+  card.addEventListener("pointerleave", () => { card.classList.remove("is-tilting"); card.style.setProperty("--ry", "0deg"); card.style.setProperty("--rx", "0deg"); });
+}
+
+$("#salir").addEventListener("click", async () => {
+  const token = localStorage.getItem(KEY_TOKEN);
+  [KEY_TOKEN, KEY_INFO, KEY_VISTO].forEach(k => localStorage.removeItem(k));
+  if (token) U.rpc("club_salir", { p_token: token });
+  tarjeta = null; tab("entrar"); show("#v-auth");
+});
+
+/* ---------- Arranque ---------- */
+async function cargar() {
+  if (!C.listo) { show("#v-setup"); return; }
+  const token = localStorage.getItem(KEY_TOKEN);
+  if (!token) { show("#v-auth"); return; }
+  const r = await U.rpc("club_mi_tarjeta", { p_token: token });
+  if (r.tarjeta) { mostrarTarjeta(r.tarjeta); return; }
+  if (r.error === "sesion") { [KEY_TOKEN, KEY_INFO].forEach(k => localStorage.removeItem(k)); show("#v-auth"); error("sesion"); return; }
+  show("#v-auth"); error(r.error);
+}
+// Al volver a la pestaña, se actualizan los sellos
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && tarjeta) {
+    U.rpc("club_mi_tarjeta", { p_token: localStorage.getItem(KEY_TOKEN) }).then(r => { if (r.tarjeta && r.tarjeta.sellos !== tarjeta.sellos) mostrarTarjeta(r.tarjeta); });
+  }
+});
+cargar();
+</script>
+</body>
+</html>

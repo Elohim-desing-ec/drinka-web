@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Panel · Club DRINKA</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#161E38">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Panel DRINKA">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="club.css">
+<style>
+main { width: min(1080px, 100% - 28px); margin: 0 auto 60px; }
+.login { width: min(400px, 100%); margin: 40px auto; padding: 26px; border-radius: 28px; background: var(--paper); color: var(--navy); text-align: center; }
+.login h1 { margin: 0 0 6px; font-weight: 900; font-size: 32px; letter-spacing: -.05em; text-transform: lowercase; }
+.login > p { margin: 0 0 20px; color: var(--navy-3); }
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 4px 0 18px; }
+.head h1 { margin: 0; font-weight: 900; font-size: clamp(32px, 5vw, 48px); letter-spacing: -.05em; text-transform: lowercase; line-height: 1; }
+.head p { margin: 6px 0 0; color: rgba(251,235,221,.65); }
+.stat { padding: 12px 18px; border-radius: 18px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); text-align: right; }
+.stat b { display: block; font-family: var(--block); font-weight: 400; font-size: 34px; line-height: 1; }
+.stat span { font-size: 13px; color: rgba(251,235,221,.65); }
+.tools { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.tool { display: flex; gap: 8px; padding: 10px; border-radius: 22px; background: var(--paper); }
+.tool .input { border: 0; background: transparent; font-weight: 600; }
+.tool .input:focus { box-shadow: none; }
+.tool svg.lead { width: 22px; height: 22px; color: var(--navy-3); align-self: center; margin-left: 8px; flex: none; }
+.tool .btn { height: 48px; flex: none; }
+.list { display: grid; gap: 10px; }
+.empty { padding: 40px 20px; text-align: center; color: rgba(251,235,221,.6); border: 1.5px dashed rgba(255,255,255,.15); border-radius: 22px; }
+.row {
+  display: grid; grid-template-columns: minmax(170px, 1.1fr) minmax(220px, 1.3fr) auto; align-items: center; gap: 18px;
+  padding: 14px 16px; border-radius: 22px; background: var(--paper); color: var(--navy);
+  animation: in .35s var(--ease) both;
+}
+@keyframes in { from { opacity: 0; transform: translateY(8px); } }
+.row.is-flash { animation: flash .8s var(--ease); }
+@keyframes flash { 30% { box-shadow: 0 0 0 4px var(--gold); } }
+.who b { display: block; font-size: 17px; }
+.who small { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; color: var(--navy-3); font-size: 13px; }
+.code { padding: 3px 8px; border-radius: 999px; background: var(--navy); color: #fff; font-weight: 800; letter-spacing: .05em; font-size: 12px; }
+.lock { padding: 3px 8px; border-radius: 999px; background: #FBE0DE; color: #8A2622; font-weight: 700; font-size: 12px; }
+.mini { container-type: inline-size; }
+.mini .stamps { gap: 6px; grid-template-columns: repeat(10, 1fr); }
+.mini .stamp { border-width: 2px; font-size: 10px; }
+.mini .stamp--prize { border-width: 2px; }
+.mini .stamp__ink { inset: -2px; }
+.mini__txt { margin-top: 6px; font-size: 13px; color: var(--navy-3); }
+.mini__txt b { color: var(--navy); }
+.acts { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.ico { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--cream); color: var(--navy); transition: transform .3s var(--spring); }
+.ico:active { transform: scale(.9); }
+.ico svg { width: 20px; height: 20px; }
+.ico--wa { background: #E3F5DF; color: #1f8a4c; }
+.add { height: 44px; padding: 0 18px; border-radius: 999px; background: var(--navy); color: #fff; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; transition: transform .3s var(--spring); }
+.add:active { transform: scale(.94); }
+.add svg { width: 16px; height: 16px; }
+.add--gold { background: var(--gold); color: var(--navy); }
+@media (max-width: 860px) {
+  .tools { grid-template-columns: 1fr; }
+  .row { grid-template-columns: 1fr; gap: 12px; }
+  .acts { justify-content: flex-start; }
+  .acts .add { flex: 1; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html"><img src="assets/logo-blanco.png" alt="DRINKA by Kai Bobba"></a>
+  <div class="top__right">
+    <button class="pillbtn" id="logout" type="button" hidden><svg><use href="#i-out"/></svg>Salir</button>
+  </div>
+</header>
+
+<main>
+  <div class="spinner" id="v-loading"></div>
+
+  <section class="login" id="v-setup" hidden>
+    <h1>falta conectar</h1>
+    <p>Pega los datos de Supabase en <b>club-config.js</b> para usar el panel.</p>
+  </section>
+
+  <section class="login" id="v-login" hidden>
+    <h1>panel drinka</h1>
+    <p>Solo para el equipo de DRINKA.</p>
+    <p class="msg msg--error" id="l-error" hidden></p>
+    <form id="f-login" novalidate>
+      <label class="field"><span>Correo</span><input class="input" id="l-email" type="email" autocomplete="username" required></label>
+      <label class="field"><span>Contraseña</span><input class="input" id="l-pass" type="password" autocomplete="current-password" required></label>
+      <button class="btn btn--navy btn--block" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <section id="v-panel" hidden>
+    <div class="head">
+      <div>
+        <h1>tarjetas club drinka</h1>
+        <p>Busca al cliente y súmale su sello al entregar.</p>
+      </div>
+      <div class="stat"><b id="s-total">0</b><span>socios</span></div>
+    </div>
+
+    <div class="tools">
+      <form class="tool" id="f-rapido" autocomplete="off">
+        <svg class="lead"><use href="#i-plus"/></svg>
+        <input class="input" id="r-codigo" placeholder="Código del cliente (DRK-1234)" maxlength="8" style="text-transform:uppercase">
+        <button class="btn btn--gold" type="submit">+1 sello</button>
+      </form>
+      <label class="tool">
+        <svg class="lead"><use href="#i-search"/></svg>
+        <input class="input" id="buscar" type="search" placeholder="Buscar por nombre, código o número">
+      </label>
+    </div>
+
+    <div class="list" id="list"></div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="club-config.js"></script>
+<script src="club-ui.js"></script>
+<script>
+const C = window.CLUB, U = window.CLUBUI;
+const $ = s => document.querySelector(s);
+const views = ["#v-loading", "#v-setup", "#v-login", "#v-panel"].map(s => $(s));
+const show = sel => { views.forEach(v => { v.hidden = v !== $(sel); }); $("#logout").hidden = sel !== "#v-panel"; };
+const sb = U.db({ auth: { persistSession: true, autoRefreshToken: true } });
+let socios = [];
+
+function fila(s) {
+  const sig = U.siguiente(s.sellos);
+  const completa = s.sellos >= C.total;
+  const tel = s.telefono.replace(/^593/, "0").replace(/(\d{3})(\d{3})(\d+)/, "$1 $2 $3");
+  return `<article class="row" data-codigo="${s.codigo}">
+    <div class="who">
+      <b>${U.esc(s.nombre)}</b>
+      <small><span class="code">${s.codigo}</span>${tel}${s.tarjetas_completas ? ` · ${s.tarjetas_completas} tarjeta${s.tarjetas_completas > 1 ? "s" : ""} completa${s.tarjetas_completas > 1 ? "s" : ""}` : ""}${s.bloqueado ? ' <span class="lock">Bloqueado por PIN</span>' : ""}</small>
+    </div>
+    <div class="mini">
+      <div class="stamps">${U.stampsHTML(s.sellos)}</div>
+      <div class="mini__txt"><b>${s.sellos}/${C.total}</b> · ${completa ? "¡Completa! Entrega: " + U.esc(C.premios[C.total]?.texto || "premio") : sig ? `faltan ${sig.falta} para ${U.esc(sig.premio.texto)}` : ""}</div>
+    </div>
+    <div class="acts">
+      <button class="ico" data-act="quitar" type="button" aria-label="Quitar un sello a ${U.esc(s.nombre)}" ${s.sellos ? "" : "disabled"}><svg><use href="#i-minus"/></svg></button>
+      ${completa
+        ? `<button class="add add--gold" data-act="canjear" type="button">Canjear y nueva tarjeta</button>`
+        : `<button class="add" data-act="sellar" type="button"><svg><use href="#i-plus"/></svg>1 sello</button>`}
+      <a class="ico ico--wa" href="https://wa.me/${s.telefono}?text=${encodeURIComponent(`¡Hola ${s.nombre.split(" ")[0]}! Tu tarjeta Club DRINKA lleva ${s.sellos} de ${C.total} sellos.`)}" target="_blank" rel="noopener" aria-label="Escribir a ${U.esc(s.nombre)} por WhatsApp"><svg><use href="#i-wa"/></svg></a>
+      <button class="ico" data-act="pin" type="button" aria-label="Poner nuevo PIN a ${U.esc(s.nombre)}"><svg><use href="#i-key"/></svg></button>
+    </div>
+  </article>`;
+}
+
+function pintar() {
+  $("#list").innerHTML = socios.length ? socios.map(fila).join("") : `<div class="empty">Aún no hay socios${$("#buscar").value ? " con esa búsqueda" : ""}. Cuando un cliente cree su tarjeta aparecerá aquí.</div>`;
+}
+
+async function cargar() {
+  const r = await U.rpc("admin_socios", { p_buscar: $("#buscar").value.trim() });
+  if (r.error === "no_autorizado") { await sb.auth.signOut(); show("#v-login"); err("Esta cuenta no tiene permiso de administrador de DRINKA."); return; }
+  if (r.error) { U.toast("No se pudo cargar. Revisa tu internet."); return; }
+  socios = r.socios; $("#s-total").textContent = r.total; pintar();
+}
+
+function actualizar(t) {
+  const i = socios.findIndex(s => s.codigo === t.codigo);
+  if (i < 0) { cargar(); return; }
+  socios[i] = { ...socios[i], ...t };
+  const el = document.querySelector(`.row[data-codigo="${t.codigo}"]`);
+  if (el) { el.outerHTML = fila(socios[i]); const n = document.querySelector(`.row[data-codigo="${t.codigo}"]`); n.classList.add("is-flash"); }
+}
+
+async function sellar(codigo, cambio = 1) {
+  const r = await U.rpc("admin_sellar", { p_codigo: codigo, p_cambio: cambio });
+  if (r.error === "no_existe") { U.toast(`No existe el código ${codigo}`); return false; }
+  if (r.error) { U.toast("No se pudo guardar. Inténtalo otra vez."); return false; }
+  actualizar(r.tarjeta);
+  const p = C.premios[r.tarjeta.sellos];
+  U.toast(cambio > 0 ? `${r.tarjeta.nombre}: ${r.tarjeta.sellos}/${C.total}${p && cambio > 0 ? ` · ¡ganó ${p.texto}!` : ""}` : `Sello quitado · ${r.tarjeta.sellos}/${C.total}`);
+  return true;
+}
+
+$("#list").addEventListener("click", async e => {
+  const b = e.target.closest("[data-act]");
+  if (!b) return;
+  const row = b.closest(".row"), codigo = row.dataset.codigo, s = socios.find(x => x.codigo === codigo);
+  b.disabled = true;
+  if (b.dataset.act === "sellar") await sellar(codigo, 1);
+  if (b.dataset.act === "quitar" && confirm(`¿Quitar un sello a ${s.nombre}?`)) await sellar(codigo, -1);
+  if (b.dataset.act === "canjear" && confirm(`¿${s.nombre} ya recibió su premio? Su tarjeta empezará de nuevo.`)) {
+    const r = await U.rpc("admin_canjear", { p_codigo: codigo });
+    if (r.tarjeta) { actualizar(r.tarjeta); U.toast("¡Premio entregado! Tarjeta nueva lista."); } else U.toast("No se pudo canjear.");
+  }
+  if (b.dataset.act === "pin") {
+    const pin = prompt(`Nuevo PIN de 4 números para ${s.nombre}:`);
+    if (pin !== null) {
+      if (!/^\d{4}$/.test(pin)) U.toast("El PIN debe tener 4 números.");
+      else {
+        const r = await U.rpc("admin_nuevo_pin", { p_codigo: codigo, p_pin: pin });
+        if (r.ok) { U.toast("PIN cambiado."); s.bloqueado = false; actualizar(s);
+          if (confirm("¿Enviarle el nuevo PIN por WhatsApp?")) open(`https://wa.me/${s.telefono}?text=${encodeURIComponent(`¡Hola ${s.nombre.split(" ")[0]}! Tu nuevo PIN de la tarjeta Club DRINKA es ${pin}. Puedes entrar en la web con tu número y este PIN.`)}`, "_blank", "noopener");
+        } else U.toast("No se pudo cambiar el PIN.");
+      }
+    }
+  }
+  b.disabled = false;
+});
+
+$("#f-rapido").addEventListener("submit", async e => {
+  e.preventDefault();
+  let c = $("#r-codigo").value.trim().toUpperCase().replace(/\s/g, "");
+  if (/^\d{4}$/.test(c)) c = `DRK-${c}`;
+  if (/^DRK\d{4}$/.test(c)) c = c.replace("DRK", "DRK-");
+  if (!/^DRK-\d{4}$/.test(c)) { U.toast("Escribe el código así: DRK-1234"); return; }
+  if (!socios.some(s => s.codigo === c)) { $("#buscar").value = ""; await cargar(); }
+  if (await sellar(c, 1)) $("#r-codigo").value = "";
+});
+
+let tq;
+$("#buscar").addEventListener("input", () => { clearTimeout(tq); tq = setTimeout(cargar, 300); });
+
+/* ---------- Ingreso ---------- */
+const err = m => { $("#l-error").textContent = m; $("#l-error").hidden = false; };
+$("#f-login").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("#l-error").hidden = true;
+  const btn = $("#f-login .btn"); btn.disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email: $("#l-email").value.trim(), password: $("#l-pass").value });
+  btn.disabled = false;
+  if (error) { err("Correo o contraseña incorrectos."); return; }
+  show("#v-panel"); cargar();
+});
+$("#logout").addEventListener("click", async () => { await sb.auth.signOut(); socios = []; show("#v-login"); });
+
+(async () => {
+  if (!C.listo || !sb) { show("#v-setup"); return; }
+  const { data } = await sb.auth.getSession();
+  if (data.session) { show("#v-panel"); cargar(); } else show("#v-login");
+})();
+</script>
+</body>
+</html>
